@@ -1,0 +1,10 @@
+[package]
+name = "broker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+protocol = { path = "../protocol" }
+storage = { path = "../storage" }
+tokio = { version = "1.28.2", features = ["sync"] }
+thiserror = "2.0.18"

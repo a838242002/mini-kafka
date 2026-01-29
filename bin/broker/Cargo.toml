@@ -1,0 +1,9 @@
+[package]
+name = "broker-bin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+broker = { path = "../../crates/broker" }
+net = { path = "../../crates/net" }
+tokio = { version = "1.28.2", features = ["rt-multi-thread", "macros"] }

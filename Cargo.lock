@@ -28,6 +28,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b35204fbdc0b3f4446b89fc1ac2cf84a8a68971995d0bf2e925ec7cd960f9cb3"
 
 [[package]]
+name = "client-bin"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "protocol",
+ "tokio",
+]
+
+[[package]]
 name = "common"
 version = "0.1.0"
 
@@ -76,6 +85,10 @@ dependencies = [
 [[package]]
 name = "protocol"
 version = "0.1.0"
+dependencies = [
+ "bytes",
+ "thiserror",
+]
 
 [[package]]
 name = "quote"

@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.associations": {
+    "Cargo.toml": "toml"
+  },
+  "rust-analyzer.rustfmt.overrideCommand": [
+    "rustfmt",
+    "--edition",
+    "2024"
+  ]
+}

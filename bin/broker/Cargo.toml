@@ -6,4 +6,4 @@ edition = "2024"
 [dependencies]
 broker = { path = "../../crates/broker" }
 net = { path = "../../crates/net" }
-tokio = { version = "1.28.2", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros"] }

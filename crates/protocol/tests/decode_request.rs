@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests {
     use bytes::{BufMut, BytesMut};
-    use protocol::{Request, decode_request};
+    use protocol::decode_request;
+    use protocol::types::Request;
 
     #[test]
     fn decode_produce_request_of() {

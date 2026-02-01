@@ -23,28 +23,23 @@ async fn main() -> std::io::Result<()> {
 
 fn build_produce(topic: &str, partition: u16, kvs: Vec<(&str, &str)>) -> bytes::Bytes {
     let mut out = BytesMut::with_capacity(256);
-    out.put_u8(1);
-    out.put_u16(topic.len() as u16);
-    out.put_slice(topic.as_bytes());
-    out.put_u16(partition);
-    out.put_u16(kvs.len() as u16);
+    common::write_api_key(&mut out, 1);
+    common::write_topic(&mut out, topic);
+    common::write_partition(&mut out, partition);
+    common::write_record_count(&mut out, kvs.len() as u16);
     for (k, v) in kvs {
-        out.put_u16(k.len() as u16);
-        out.put_slice(k.as_bytes());
-        out.put_u32(v.len() as u32);
-        out.put_slice(v.as_bytes());
+        common::write_record(&mut out, k, v);
     }
     out.freeze()
 }
 
 fn build_fetch(topic: &str, partition: u16, offset: i64, max_bytes: u32) -> bytes::Bytes {
     let mut out = BytesMut::with_capacity(64);
-    out.put_u8(2);
-    out.put_u16(topic.len() as u16);
-    out.put_slice(topic.as_bytes());
-    out.put_u16(partition);
-    out.put_i64(offset);
-    out.put_u32(max_bytes);
+    common::write_api_key(&mut out, 2);
+    common::write_topic(&mut out, topic);
+    common::write_partition(&mut out, partition);
+    common::write_offset(&mut out, offset);
+    common::write_max_bytes(&mut out, max_bytes);
     out.freeze()
 }
 

@@ -87,3 +87,42 @@ pub async fn handle(&self, req: Request) -> Response
 
 - 使用 `Arc<Mutex<PartitionLog>>` 做細粒度鎖
 - 或在 map 中存放 `Arc<PartitionLog>` 並使用內部同步
+
+## Arc 的用途（std::sync::Arc）
+
+`Arc` 是「多執行緒安全的引用計數指標」（Atomic Reference Counted）。它讓同一份資料可被多個執行緒/任務共享，而不需要複製。
+
+### 為什麼需要 Arc
+
+在 Tokio server 中，每個連線都會 spawn 成獨立 task，需要共享同一個 `Broker`：
+
+- 若直接把 `Broker` move 進 task，其他連線就無法再使用
+- `Arc` 讓每個 task 都拿到同一份 `Broker` 的共享引用
+
+### 使用方式
+
+簡化示意：
+
+```rust
+let broker = Arc::new(Broker::new(PathBuf::from("data")));
+let b = broker.clone();
+tokio::spawn(async move {
+    // b 和 broker 指向同一份資料
+    b.handle(req).await;
+});
+```
+
+`clone()` 只會增加引用計數，不會複製 `Broker` 本體，成本非常低。
+
+### 與 Mutex 的搭配
+
+`Arc` 只負責共享所有權，不提供內部可變性。如果共享的資料需要修改，通常會搭配 `Mutex`：
+
+```
+Arc<Mutex<T>>
+```
+
+在本專案中：
+
+- `Arc<Broker>` 用於跨連線共享 broker
+- broker 內部再用 `Mutex<HashMap<...>>` 保護共享可變狀態

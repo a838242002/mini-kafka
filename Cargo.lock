@@ -32,6 +32,7 @@ name = "client-bin"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "common",
  "protocol",
  "tokio",
 ]
@@ -39,6 +40,10 @@ dependencies = [
 [[package]]
 name = "common"
 version = "0.1.0"
+dependencies = [
+ "bytes",
+ "thiserror",
+]
 
 [[package]]
 name = "libc"
@@ -87,6 +92,7 @@ name = "protocol"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "common",
  "thiserror",
 ]
 

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf};
 
-use protocol::{Request, Response};
+use protocol::types::{FetchResponse, ProduceResponse, Request, Response};
 use storage::PartitionLog;
 use tokio::sync::Mutex;
 
@@ -40,7 +40,7 @@ impl Broker {
                 };
 
                 let resp = match log.append(&r.records) {
-                    Ok(base) => Response::Produce(protocol::ProduceResponse {
+                    Ok(base) => Response::Produce(ProduceResponse {
                         status: 0,
                         base_offset: base,
                     }),
@@ -61,7 +61,7 @@ impl Broker {
                 };
 
                 let resp = match log.fetch(r.offset, r.max_bytes) {
-                    Ok(items) => Response::Fetch(protocol::FetchResponse { status: 0, items }),
+                    Ok(items) => Response::Fetch(FetchResponse { status: 0, items }),
                     Err(e) => Response::Error {
                         message: format!("fetch error: {e}"),
                     },

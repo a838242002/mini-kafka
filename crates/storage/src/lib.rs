@@ -6,7 +6,7 @@ use std::{
 };
 
 use bytes::{Buf, BufMut, BytesMut};
-use protocol::Record;
+use protocol::types::Record;
 
 #[derive(thiserror::Error, Debug)]
 pub enum StorageError {

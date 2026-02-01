@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use broker::Broker;
 use bytes::{Buf, BufMut, BytesMut};
-use protocol::{Response, decode_request, encode_response};
+use protocol::{decode_request, encode_response, types::Response};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},

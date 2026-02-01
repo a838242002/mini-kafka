@@ -12,3 +12,4 @@ tokio = { version = "1.49.0", features = [
 ] }
 bytes = "1.11.0"
 protocol = { path = "../../crates/protocol" }
+common = { path = "../../crates/common" }

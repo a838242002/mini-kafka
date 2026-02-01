@@ -10,13 +10,13 @@ async fn main() -> std::io::Result<()> {
     let produce_payload = build_produce("test", 0, vec![("k1", "v1"), ("k2", "v2")]);
     write_frame(&mut sock, &produce_payload).await?;
     let resp1 = read_frame(&mut sock).await?;
-    println!("produce resp bytes len={}", resp1.len());
+    println!("produce resp bytes ={}", hex_preview(&resp1));
 
     // --- Fetch request (api_key=2) ---
     let fetch_payload = build_fetch("test", 0, 0, 1024 * 1024);
     write_frame(&mut sock, &fetch_payload).await?;
     let resp2 = read_frame(&mut sock).await?;
-    println!("fetch resp bytes len={}", resp2.len());
+    println!("fetch resp bytes len={}", hex_preview(&resp2));
 
     Ok(())
 }
@@ -64,4 +64,18 @@ async fn read_frame(sock: &mut TcpStream) -> std::io::Result<bytes::Bytes> {
     let mut payload = vec![0u8; len];
     sock.read_exact(&mut payload).await?;
     Ok(payload.into())
+}
+
+fn hex_preview(b: &bytes::Bytes) -> String {
+    let n = b.len().min(64);
+    let mut s = String::new();
+    for byte in &b[..n] {
+        s.push_str(&format!("{:02x} ", byte));
+    }
+
+    if b.len() > n {
+        s.push_str("...");
+    }
+
+    s
 }

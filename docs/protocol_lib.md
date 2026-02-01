@@ -50,7 +50,8 @@ fn read_u8_dyn(b: &mut dyn Buf) -> Result<u8, ProtoError> {
 這段是協定的原始讀寫工具，全部都針對 bytes 緩衝區操作。
 
 - `need(b, n)`：檢查 `Buf` 剩餘長度是否 >= `n`，不足就回傳 `Eof`。
-- `get_u8 / get_u16 / get_u32 / get_i64`：先檢查，再從 `Buf` 讀取對應型別。
+- `get_u8 / get_u16 / get_u32 / get_i64`：先檢查，再從 `Buf` 讀取對應型別（讀取位置會前進）。  
+  例如 `get_u8` 先確保至少 1 byte，然後呼叫 `b.get_u8()` 取值並消耗 1 byte。
 - `put_str(out, s)`：
   - 先將字串長度寫入為 `u16`
   - 再寫入字串 bytes

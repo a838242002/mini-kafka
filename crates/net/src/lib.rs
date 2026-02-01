@@ -1,11 +1,14 @@
+use std::sync::Arc;
+
+use broker::Broker;
 use bytes::{Buf, BufMut, BytesMut};
-use protocol::{Request, Response, decode_request, encode_response};
+use protocol::{Response, decode_request, encode_response};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
 };
 
-pub async fn serve_hello(addr: &str) -> std::io::Result<()> {
+pub async fn serve(addr: &str, broker: Arc<Broker>) -> std::io::Result<()> {
     let listener = TcpListener::bind(addr).await?;
     println!("Server listening on {}", addr);
 
@@ -13,15 +16,17 @@ pub async fn serve_hello(addr: &str) -> std::io::Result<()> {
         let (sock, peer) = listener.accept().await?;
         println!("Accepted connection from {}", peer);
 
+        let b = broker.clone();
+
         tokio::spawn(async move {
-            if let Err(e) = handle_conn(sock).await {
+            if let Err(e) = handle_conn(sock, b).await {
                 eprint!("conn error: {}", e);
             }
         });
     }
 }
 
-async fn handle_conn(mut sock: TcpStream) -> std::io::Result<()> {
+async fn handle_conn(mut sock: TcpStream, broker: Arc<Broker>) -> std::io::Result<()> {
     loop {
         let payload = match read_frame(&mut sock).await {
             Ok(p) => p,
@@ -30,7 +35,7 @@ async fn handle_conn(mut sock: TcpStream) -> std::io::Result<()> {
         };
 
         let resp = match decode_request(payload) {
-            Ok(req) => handle_stub(req),
+            Ok(req) => broker.handle(req).await,
             Err(e) => Response::Error {
                 message: format!("invalid request: {}", e),
             },
@@ -43,19 +48,6 @@ async fn handle_conn(mut sock: TcpStream) -> std::io::Result<()> {
             )
         })?;
         write_frame(&mut sock, &out).await?;
-    }
-}
-
-fn handle_stub(req: Request) -> Response {
-    match req {
-        Request::Produce(_r) => Response::Produce(protocol::ProduceResponse {
-            status: 0,
-            base_offset: 0,
-        }),
-        Request::Fetch(_r) => Response::Fetch(protocol::FetchResponse {
-            status: 0,
-            items: vec![],
-        }),
     }
 }
 
